@@ -27,6 +27,7 @@ type Config struct {
 	ClientName    string
 	ClientVersion string
 	Stderr        io.Writer
+	Debug         bool
 }
 
 // Client manages an ACP subprocess and communicates via stdio using acp-go-sdk.
@@ -86,8 +87,10 @@ func New(ctx context.Context, cfg Config) (*Client, error) {
 	}
 
 	conn := acp.NewClientSideConnection(noopClient{}, stdin, stdout)
-	// Suppress SDK's INFO-level "connection closed" disconnect noise
-	conn.SetLogger(slog.New(slog.NewTextHandler(io.Discard, nil)))
+	// Filter SDK diagnostics: suppress INFO disconnect noise, but retain WARN and ERROR
+	conn.SetLogger(slog.New(slog.NewTextHandler(stderr, &slog.HandlerOptions{
+		Level: slog.LevelWarn,
+	})))
 
 	return &Client{
 		cmd:           cmd,

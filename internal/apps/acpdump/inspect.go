@@ -65,6 +65,7 @@ func Run(ctx context.Context, cfg RunConfig) (runErr error) {
 		Command:    cfg.Command,
 		WorkingDir: cfg.WorkingDir,
 		Stderr:     lockedStderr,
+		Debug:      logging.DebugEnabled(),
 	})
 	if err != nil {
 		return fmt.Errorf("create acp client: %w", err)
