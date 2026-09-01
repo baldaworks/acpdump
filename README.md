@@ -1,16 +1,16 @@
-# acp-dump
+# acpdump
 
-[![test](https://github.com/normahq/acp-dump/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/normahq/acp-dump/actions/workflows/test.yml)
-[![lint](https://github.com/normahq/acp-dump/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/normahq/acp-dump/actions/workflows/lint.yml)
-[![security](https://github.com/normahq/acp-dump/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/normahq/acp-dump/actions/workflows/security.yml)
-[![release](https://github.com/normahq/acp-dump/actions/workflows/omnidist-release.yml/badge.svg)](https://github.com/normahq/acp-dump/actions/workflows/omnidist-release.yml)
-[![npm](https://img.shields.io/npm/v/@normahq/acp-dump)](https://www.npmjs.com/package/@normahq/acp-dump)
-[![License](https://img.shields.io/github/license/normahq/acp-dump)](LICENSE)
-[![Version](https://img.shields.io/github/v/tag/normahq/acp-dump?label=version)](https://github.com/normahq/acp-dump/tags)
+[![test](https://github.com/baldaworks/acpdump/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/baldaworks/acpdump/actions/workflows/test.yml)
+[![lint](https://github.com/baldaworks/acpdump/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/baldaworks/acpdump/actions/workflows/lint.yml)
+[![security](https://github.com/baldaworks/acpdump/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/baldaworks/acpdump/actions/workflows/security.yml)
+[![release](https://github.com/baldaworks/acpdump/actions/workflows/omnidist-release.yml/badge.svg)](https://github.com/baldaworks/acpdump/actions/workflows/omnidist-release.yml)
+[![npm](https://img.shields.io/npm/v/@baldaworks/acpdump)](https://www.npmjs.com/package/@baldaworks/acpdump)
+[![License](https://img.shields.io/github/license/baldaworks/acpdump)](LICENSE)
+[![Version](https://img.shields.io/github/v/tag/baldaworks/acpdump?label=version)](https://github.com/baldaworks/acpdump/tags)
 
 **Inspect ACP agents before wiring them into your workflow.**
 
-`acp-dump` starts any stdio Agent Client Protocol (ACP) server command and
+`acpdump` starts any stdio Agent Client Protocol (ACP) server command and
 prints the initialize/session data you need to trust, debug, or compare it.
 
 Use it when an ACP provider says it supports models, modes, auth, sessions, or
@@ -33,37 +33,37 @@ against it.
 Install globally:
 
 ```sh
-npm install -g @normahq/acp-dump@latest
+npm install -g @baldaworks/acpdump@latest
 ```
 
 Run once with `npx`:
 
 ```sh
-npx @normahq/acp-dump@latest -- <acp-server-cmd> [args...]
+npx @baldaworks/acpdump@latest -- <acp-server-cmd> [args...]
 ```
 
 Inspect an ACP server:
 
 ```sh
-acp-dump -- opencode acp
-acp-dump --json -- opencode acp
-acp-dump -- npx -y @normahq/codex-acp-bridge@latest
-acp-dump -- npx -y @zed-industries/claude-code-acp@latest
-acp-dump --debug -- npx -y pi-acp
+acpdump -- opencode acp
+acpdump --json -- opencode acp
+acpdump -- npx -y @normahq/codex-acp-bridge@latest
+acpdump -- npx -y @zed-industries/claude-code-acp@latest
+acpdump --debug -- npx -y pi-acp
 ```
 
 ## Provider Commands
 
 | Provider | Command |
 | --- | --- |
-| OpenCode | `acp-dump -- opencode acp` |
-| Codex | `acp-dump -- npx -y @normahq/codex-acp-bridge@latest` |
-| Claude Code | `acp-dump -- npx -y @zed-industries/claude-code-acp@latest` |
-| Pi | `acp-dump -- npx -y pi-acp` |
-| Generic ACP | `acp-dump -- <acp-server-cmd> [args...]` |
+| OpenCode | `acpdump -- opencode acp` |
+| Codex | `acpdump -- npx -y @normahq/codex-acp-bridge@latest` |
+| Claude Code | `acpdump -- npx -y @zed-industries/claude-code-acp@latest` |
+| Pi | `acpdump -- npx -y pi-acp` |
+| Generic ACP | `acpdump -- <acp-server-cmd> [args...]` |
 
 The `--` separator is required. Arguments before `--` are treated as
-`acp-dump` flags; arguments after it are passed to the ACP server command.
+`acpdump` flags; arguments after it are passed to the ACP server command.
 
 ## Output
 
@@ -96,13 +96,13 @@ reports, or CI logs.
 
 ## Repository
 
-- GitHub: <https://github.com/normahq/acp-dump>
+- GitHub: <https://github.com/baldaworks/acpdump>
 
 ## Contact
 
-- Issues: <https://github.com/normahq/acp-dump/issues>
+- Issues: <https://github.com/baldaworks/acpdump/issues>
 - Maintainer: [@metalagman](https://github.com/metalagman)
 
 ## License
 
-MIT. See the repository [LICENSE](https://github.com/normahq/acp-dump/blob/main/LICENSE).
+MIT. See the repository [LICENSE](https://github.com/baldaworks/acpdump/blob/main/LICENSE).

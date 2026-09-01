@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/normahq/acp-dump/internal/apps/acpdump"
-	"github.com/normahq/acp-dump/internal/logging"
+	"github.com/baldaworks/acpdump/internal/apps/acpdump"
+	"github.com/baldaworks/acpdump/internal/logging"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +15,7 @@ func Command() *cobra.Command {
 	var debugLogs bool
 
 	cmd := &cobra.Command{
-		Use:          "acp-dump [--json] -- <acp-server-cmd> [args...]",
+		Use:          "acpdump [--json] -- <acp-server-cmd> [args...]",
 		Short:        "Inspect any stdio ACP server command",
 		Long:         "Start a stdio ACP server command and print ACP initialize/session information.",
 		SilenceUsage: true,
@@ -38,7 +38,7 @@ func Command() *cobra.Command {
 			if err := logging.Init(logging.WithLevel(logLevel)); err != nil {
 				return fmt.Errorf("initialize logging: %w", err)
 			}
-			ctx := log.Logger.With().Str("component", "tool.acp_dump").Logger().WithContext(cmd.Context())
+			ctx := log.Logger.With().Str("component", "tool.acpdump").Logger().WithContext(cmd.Context())
 
 			return acpdump.Run(ctx, acpdump.RunConfig{
 				Command:      serverCommand,
@@ -52,7 +52,7 @@ func Command() *cobra.Command {
 	}
 	cmd.Flags().BoolVar(&jsonOutput, "json", false, "print output as JSON")
 	cmd.Flags().BoolVar(&debugLogs, "debug", false, "enable debug logging")
-	cmd.Example = "  acp-dump -- opencode acp\n  acp-dump --json -- npx -y @normahq/codex-acp-bridge@latest\n  acp-dump -- npx -y @zed-industries/claude-code-acp@latest\n  acp-dump -- npx -y pi-acp"
+	cmd.Example = "  acpdump -- opencode acp\n  acpdump --json -- npx -y @normahq/codex-acp-bridge@latest\n  acpdump -- npx -y @zed-industries/claude-code-acp@latest\n  acpdump -- npx -y pi-acp"
 	return cmd
 }
 

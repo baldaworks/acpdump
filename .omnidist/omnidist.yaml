@@ -1,8 +1,8 @@
 profiles:
-  acp-dump:
+  acpdump:
     tool:
-      name: acp-dump
-      main: ./cmd/acp-dump
+      name: acpdump
+      main: ./cmd/acpdump
     readme-path: ./README.md
     version:
       source: git-tag
@@ -23,11 +23,11 @@ profiles:
       cgo: false
     distributions:
       npm:
-        package: '@normahq/acp-dump'
+        package: '@baldaworks/acpdump'
         registry: https://registry.npmjs.org
         access: public
         publish-auth: trusted
-        repository-url: git+https://github.com/normahq/acp-dump.git
+        repository-url: git+https://github.com/baldaworks/acpdump.git
         license: MIT
         include-readme: true
         keywords:

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/normahq/acp-dump/internal/logging"
+	"github.com/baldaworks/acpdump/internal/logging"
 	"github.com/rs/zerolog/log"
 )
 

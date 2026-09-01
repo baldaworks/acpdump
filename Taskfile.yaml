@@ -1,13 +1,13 @@
 version: '3'
 
 vars:
-  BINARY_NAME: acp-dump
-  MAIN_PATH: ./cmd/acp-dump
+  BINARY_NAME: acpdump
+  MAIN_PATH: ./cmd/acpdump
   OUTPUT_DIR: bin
 
 tasks:
   default:
-    desc: Build acp-dump binary
+    desc: Build acpdump binary
     cmds:
       - mkdir -p {{.OUTPUT_DIR}}
       - go build -o {{.OUTPUT_DIR}}/{{.BINARY_NAME}} {{.MAIN_PATH}}

@@ -24,22 +24,22 @@ jobs:
       - name: Install omnidist
         run: npm install -g '@omnidist/omnidist@0.1.30'
       - name: Build artifacts
-        run: omnidist --profile 'acp-dump' build
+        run: omnidist --profile 'acpdump' build
       - name: Stage artifacts
-        run: omnidist --profile 'acp-dump' npm stage
+        run: omnidist --profile 'acpdump' npm stage
       - name: Verify artifacts
-        run: omnidist --profile 'acp-dump' npm verify
+        run: omnidist --profile 'acpdump' npm verify
       - name: Package GitHub release assets
         run: |
           version="${GITHUB_REF_NAME#v}"
-          mkdir -p .omnidist/acp-dump/release
-          tar -czf ".omnidist/acp-dump/release/acp-dump_${version}_darwin_amd64.tar.gz" -C .omnidist/acp-dump/dist/darwin/amd64 acp-dump
-          tar -czf ".omnidist/acp-dump/release/acp-dump_${version}_darwin_arm64.tar.gz" -C .omnidist/acp-dump/dist/darwin/arm64 acp-dump
-          tar -czf ".omnidist/acp-dump/release/acp-dump_${version}_linux_amd64.tar.gz" -C .omnidist/acp-dump/dist/linux/amd64 acp-dump
-          tar -czf ".omnidist/acp-dump/release/acp-dump_${version}_linux_arm64.tar.gz" -C .omnidist/acp-dump/dist/linux/arm64 acp-dump
-          tar -czf ".omnidist/acp-dump/release/acp-dump_${version}_windows_amd64.tar.gz" -C .omnidist/acp-dump/dist/windows/amd64 acp-dump.exe
+          mkdir -p .omnidist/acpdump/release
+          tar -czf ".omnidist/acpdump/release/acpdump_${version}_darwin_amd64.tar.gz" -C .omnidist/acpdump/dist/darwin/amd64 acpdump
+          tar -czf ".omnidist/acpdump/release/acpdump_${version}_darwin_arm64.tar.gz" -C .omnidist/acpdump/dist/darwin/arm64 acpdump
+          tar -czf ".omnidist/acpdump/release/acpdump_${version}_linux_amd64.tar.gz" -C .omnidist/acpdump/dist/linux/amd64 acpdump
+          tar -czf ".omnidist/acpdump/release/acpdump_${version}_linux_arm64.tar.gz" -C .omnidist/acpdump/dist/linux/arm64 acpdump
+          tar -czf ".omnidist/acpdump/release/acpdump_${version}_windows_amd64.tar.gz" -C .omnidist/acpdump/dist/windows/amd64 acpdump.exe
       - name: Pack staged artifacts
-        run: tar -czf omnidist-staged.tgz .omnidist/acp-dump
+        run: tar -czf omnidist-staged.tgz .omnidist/acpdump
       - name: Upload staged artifacts
         uses: actions/upload-artifact@v7.0.1
         with:
@@ -49,13 +49,13 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: github-release-assets
-          path: .omnidist/acp-dump/release/*
+          path: .omnidist/acpdump/release/*
           if-no-files-found: error
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7.0.1
         with:
           name: dist
-          path: .omnidist/acp-dump/dist/**/*
+          path: .omnidist/acpdump/dist/**/*
           if-no-files-found: error
 
   publish_github_release:
@@ -88,7 +88,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      NPM_PACKAGE: '@normahq/acp-dump'
+      NPM_PACKAGE: '@baldaworks/acpdump'
     steps:
       - uses: actions/checkout@v7.0.0
       - uses: actions/setup-node@v6.4.0
@@ -105,12 +105,12 @@ jobs:
       - name: Restore staged artifacts
         run: tar -xzf omnidist-staged.tgz
       - name: Verify artifacts
-        run: omnidist --profile 'acp-dump' npm verify
+        run: omnidist --profile 'acpdump' npm verify
       - name: Publish npm artifacts
         run: |
           NPM_VERSION="${GITHUB_REF_NAME#v}"
           if npm view "${NPM_PACKAGE}@${NPM_VERSION}" version >/dev/null 2>&1; then
             echo "${NPM_PACKAGE}@${NPM_VERSION} already exists; skipping publish."
           else
-            omnidist --profile 'acp-dump' npm publish
+            omnidist --profile 'acpdump' npm publish
           fi

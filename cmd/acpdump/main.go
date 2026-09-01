@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/normahq/acp-dump/cmd/acp-dump/cmd"
+	"github.com/baldaworks/acpdump/cmd/acpdump/cmd"
 )
 
 func main() {

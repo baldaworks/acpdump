@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	acp "github.com/coder/acp-go-sdk"
-	"github.com/normahq/acp-dump/internal/apps/appio"
-	"github.com/normahq/acp-dump/internal/logging"
-	"github.com/normahq/go-adk-acpagent/v2"
+	"github.com/baldaworks/acpdump/internal/acpclient"
+	"github.com/baldaworks/acpdump/internal/apps/appio"
+	"github.com/baldaworks/acpdump/internal/logging"
 )
 
 const unknownValue = "unknown"
@@ -61,11 +61,10 @@ func Run(ctx context.Context, cfg RunConfig) (runErr error) {
 		Strs("command", cfg.Command).
 		Msg(startMessage)
 
-	client, err := acpagent.NewClient(ctx, acpagent.ClientConfig{
+	client, err := acpclient.New(ctx, acpclient.Config{
 		Command:    cfg.Command,
 		WorkingDir: cfg.WorkingDir,
 		Stderr:     lockedStderr,
-		Logger:     logging.Slog().With("component", "tool.acp_dump"),
 	})
 	if err != nil {
 		return fmt.Errorf("create acp client: %w", err)
@@ -85,7 +84,7 @@ func Run(ctx context.Context, cfg RunConfig) (runErr error) {
 		runErr = fmt.Errorf("initialize acp client: %w", err)
 		return runErr
 	}
-	sessionResp, err := client.CreateSession(ctx, cfg.WorkingDir, acpSessionConfigValues(cfg.SessionModel), nil)
+	sessionResp, err := client.NewSession(ctx, cfg.WorkingDir)
 	if err != nil {
 		runErr = fmt.Errorf("create acp session: %w", err)
 		return runErr
@@ -211,13 +210,6 @@ func writeSessionSummary(stdout io.Writer, session *acp.NewSessionResponse) erro
 		return err
 	}
 	return nil
-}
-
-func acpSessionConfigValues(modelName string) []acpagent.SessionConfigValue {
-	if modelName = strings.TrimSpace(modelName); modelName == "" {
-		return nil
-	}
-	return []acpagent.SessionConfigValue{{ID: "model", Value: modelName}}
 }
 
 func writeSessionModeSummary(stdout io.Writer, modes *acp.SessionModeState) error {
