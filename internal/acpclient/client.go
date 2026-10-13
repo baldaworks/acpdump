@@ -86,7 +86,7 @@ func New(ctx context.Context, cfg Config) (*Client, error) {
 		return nil, fmt.Errorf("start acp process: %w", err)
 	}
 
-	conn := acp.NewClientSideConnection(noopClient{}, stdin, stdout)
+	conn := acp.NewClientSideConnection(noopClient{}, booleanConfigWriter{Writer: stdin}, stdout)
 	// Filter SDK diagnostics: suppress INFO disconnect noise, but retain WARN and ERROR
 	conn.SetLogger(slog.New(slog.NewTextHandler(stderr, &slog.HandlerOptions{
 		Level: slog.LevelWarn,

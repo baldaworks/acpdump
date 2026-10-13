@@ -38,6 +38,12 @@ func TestClientLifecycle(t *testing.T) {
 	if sessionResp.SessionId != "mock-session-1" {
 		t.Errorf("unexpected session id: %s", sessionResp.SessionId)
 	}
+	if len(sessionResp.ConfigOptions) != 1 || sessionResp.ConfigOptions[0].Boolean == nil {
+		t.Fatalf("boolean configuration was not discovered: %+v", sessionResp.ConfigOptions)
+	}
+	if !sessionResp.ConfigOptions[0].Boolean.CurrentValue {
+		t.Error("boolean configuration value was lost")
+	}
 
 	if err := client.Close(); err != nil {
 		t.Fatalf("Close() failed: %v", err)
@@ -65,6 +71,7 @@ func TestHelperProcess(t *testing.T) {
 			JSONRPC string          `json:"jsonrpc"`
 			ID      json.RawMessage `json:"id"`
 			Method  string          `json:"method"`
+			Params  json.RawMessage `json:"params"`
 		}
 		if err := json.Unmarshal([]byte(line), &req); err != nil {
 			continue
@@ -72,6 +79,31 @@ func TestHelperProcess(t *testing.T) {
 
 		switch req.Method {
 		case "initialize":
+			var params struct {
+				ClientCapabilities struct {
+					Session struct {
+						ConfigOptions struct {
+							Boolean *struct{} `json:"boolean"`
+						} `json:"configOptions"`
+					} `json:"session"`
+				} `json:"clientCapabilities"`
+				ClientInfo struct {
+					Name string `json:"name"`
+				} `json:"clientInfo"`
+				ProtocolVersion int `json:"protocolVersion"`
+			}
+			if err := json.Unmarshal(req.Params, &params); err != nil {
+				t.Fatal(err)
+			}
+			if params.ClientCapabilities.Session.ConfigOptions.Boolean == nil || params.ClientInfo.Name != "acpdump" || params.ProtocolVersion != 1 {
+				resp := map[string]any{
+					"jsonrpc": "2.0", "id": mustRaw(req.ID),
+					"error": map[string]any{"code": -32602, "message": "missing boolean config capability or client identity"},
+				}
+				data, _ := json.Marshal(resp)
+				_, _ = os.Stdout.Write(append(data, '\n'))
+				continue
+			}
 			resp := map[string]any{
 				"jsonrpc": "2.0",
 				"id":      mustRaw(req.ID),
@@ -106,6 +138,9 @@ func TestHelperProcess(t *testing.T) {
 				"id":      mustRaw(req.ID),
 				"result": map[string]any{
 					"sessionId": "mock-session-1",
+					"configOptions": []any{map[string]any{
+						"id": "toggle", "name": "Toggle", "type": "boolean", "currentValue": true,
+					}},
 				},
 			}
 			data, _ := json.Marshal(resp)

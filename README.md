@@ -74,7 +74,14 @@ Human-readable output includes:
 - ACP capabilities
 - auth methods
 - session id
-- available session modes and models when provided by the server
+- session configuration options, including models, modes, reasoning levels,
+  model settings, and provider-specific controls when advertised by the server
+- current configuration values, descriptions, and available choices, including
+  grouped choices and boolean toggles
+
+`acpdump` advertises support for boolean configuration options. When a server
+does not provide configuration options, the output falls back to legacy session
+modes.
 
 Use `--json` when you want stable output for scripts, test fixtures, issue
 reports, or CI logs.

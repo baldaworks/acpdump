@@ -7,10 +7,10 @@ import (
 	"io"
 	"strings"
 
-	acp "github.com/coder/acp-go-sdk"
 	"github.com/baldaworks/acpdump/internal/acpclient"
 	"github.com/baldaworks/acpdump/internal/apps/appio"
 	"github.com/baldaworks/acpdump/internal/logging"
+	acp "github.com/coder/acp-go-sdk"
 )
 
 const unknownValue = "unknown"
@@ -207,8 +207,86 @@ func writeSessionSummary(stdout io.Writer, session *acp.NewSessionResponse) erro
 	if _, err := fmt.Fprintf(stdout, "Session: %s\n", session.SessionId); err != nil {
 		return err
 	}
-	if err := writeSessionModeSummary(stdout, session.Modes); err != nil {
+	if len(session.ConfigOptions) > 0 {
+		return writeSessionConfigSummary(stdout, session.ConfigOptions)
+	}
+	return writeSessionModeSummary(stdout, session.Modes)
+}
+
+func writeSessionConfigSummary(stdout io.Writer, options []acp.SessionConfigOption) error {
+	if _, err := fmt.Fprintf(stdout, "Session config options (%d):\n", len(options)); err != nil {
 		return err
+	}
+	for _, option := range options {
+		switch {
+		case option.Select != nil:
+			if err := writeSessionConfigSelect(stdout, option.Select); err != nil {
+				return err
+			}
+		case option.Boolean != nil:
+			value := option.Boolean
+			line := fmt.Sprintf("%s, current=%t", sessionConfigLabel(value.Id, value.Name, value.Category, "boolean"), value.CurrentValue)
+			if _, err := fmt.Fprintln(stdout, appendDescription(line, value.Description)); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func sessionConfigLabel(id acp.SessionConfigId, name string, category *acp.SessionConfigOptionCategory, kind string) string {
+	metadata := "type=" + kind
+	if category != nil && *category != "" {
+		metadata = "category=" + string(*category) + ", " + metadata
+	}
+	return fmt.Sprintf("- %s: %s (%s)", id, strings.TrimSpace(name), metadata)
+}
+
+func appendDescription(line string, description *string) string {
+	if text := trimOptionalString(description); text != "" {
+		return line + ": " + text
+	}
+	return line
+}
+
+func writeSessionConfigSelect(stdout io.Writer, option *acp.SessionConfigOptionSelect) error {
+	count := 0
+	if option.Options.Ungrouped != nil {
+		count = len(*option.Options.Ungrouped)
+	} else if option.Options.Grouped != nil {
+		for _, group := range *option.Options.Grouped {
+			count += len(group.Options)
+		}
+	}
+	line := fmt.Sprintf("%s, current=%s, available (%d):", sessionConfigLabel(option.Id, option.Name, option.Category, "select"), option.CurrentValue, count)
+	if description := trimOptionalString(option.Description); description != "" {
+		line += " " + description
+	}
+	if _, err := fmt.Fprintln(stdout, line); err != nil {
+		return err
+	}
+	if option.Options.Ungrouped != nil {
+		return writeSessionConfigChoices(stdout, *option.Options.Ungrouped, "  ")
+	}
+	if option.Options.Grouped != nil {
+		for _, group := range *option.Options.Grouped {
+			if _, err := fmt.Fprintf(stdout, "  %s: %s\n", group.Group, strings.TrimSpace(group.Name)); err != nil {
+				return err
+			}
+			if err := writeSessionConfigChoices(stdout, group.Options, "    "); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func writeSessionConfigChoices(stdout io.Writer, choices []acp.SessionConfigSelectOption, indent string) error {
+	for _, choice := range choices {
+		line := fmt.Sprintf("%s- %s: %s", indent, choice.Value, strings.TrimSpace(choice.Name))
+		if _, err := fmt.Fprintln(stdout, appendDescription(line, choice.Description)); err != nil {
+			return err
+		}
 	}
 	return nil
 }

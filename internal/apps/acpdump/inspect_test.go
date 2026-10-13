@@ -192,9 +192,13 @@ func runACPDumpHelper(stdin io.Reader, stdout io.Writer) {
 				writeHelperError(stdout, req.ID, -32602, "Invalid params")
 				continue
 			}
-			writeHelperResponse(stdout, req.ID, map[string]any{
+			result := map[string]any{
 				"sessionId": "session-1",
-			})
+			}
+			if config := os.Getenv("GO_ACPDUMP_HELPER_CONFIG"); config != "" {
+				result["configOptions"] = json.RawMessage(config)
+			}
+			writeHelperResponse(stdout, req.ID, result)
 		case "session/set_mode":
 			writeHelperResponse(stdout, req.ID, map[string]any{})
 		default:
